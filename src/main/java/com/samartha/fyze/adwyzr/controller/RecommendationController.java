@@ -60,15 +60,30 @@ public class RecommendationController {
     }
 
     @GetMapping(value = {"", "/"})
-    public ResponseEntity<ApiResponse<Map<String, List<Recommendation>>>> findAllRecommendationsFromAdvisor(
+    public ResponseEntity<ApiResponse<Map<String, List<Recommendation>>>> findAllRecommendations(
             @RequestParam(required = false) Long advisorId,
+            @RequestParam(required = false) Long stockId,
             @RequestParam(required = false, defaultValue = "true") Boolean onlyActive,
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size){
-        List<Recommendation> recommendationList = recommendationService.getAllRecommendations(advisorId, onlyActive, page,  size);
+        List<Recommendation> recommendationList = recommendationService.getAllRecommendations(stockId, advisorId, onlyActive, page,  size);
         Map<String, List<Recommendation>> data = Map.of("recommendations", recommendationList);
         return new ResponseEntity<>(
                 ApiResponse.<Map<String, List<Recommendation>>>builder()
+                        .data(data)
+                        .message("Recommendations fetched successfully")
+                        .build(),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/stock/active/consolidated")
+    public ResponseEntity<ApiResponse<Map<String, List<ConsolidatedBuyRecommendation>>>>
+    findLastKAdvisorActiveStockRecommendationsForGivenStock(@RequestParam Long stockId, @RequestParam(required = false, defaultValue = "10") Integer size){
+        List<ConsolidatedBuyRecommendation> recommendationList = recommendationService.getLastKAdvisorActiveRecommendationForGivenStock(stockId, size);
+        Map<String, List<ConsolidatedBuyRecommendation>> data = Map.of("recommendations", recommendationList);
+        return new ResponseEntity<>(
+                ApiResponse.<Map<String, List<ConsolidatedBuyRecommendation>>>builder()
                         .data(data)
                         .message("Recommendations fetched successfully")
                         .build(),

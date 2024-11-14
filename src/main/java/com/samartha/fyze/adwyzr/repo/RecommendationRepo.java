@@ -19,6 +19,7 @@ public interface RecommendationRepo extends JpaRepository<Recommendation, String
               ROW_NUMBER() OVER (PARTITION BY stock_id ORDER BY created_at DESC) AS rn
           FROM recommendations
           WHERE is_active = true
+          AND advisor_id = :advisorId
         ),
         latest_stocks AS (
           SELECT stock_id
@@ -35,6 +36,32 @@ public interface RecommendationRepo extends JpaRepository<Recommendation, String
       ORDER BY r.created_at DESC;
     """, nativeQuery = true)
     List<Recommendation> findLastKActiveStockRecommendationsByAdvisorId(@Param("advisorId") Long advisorId, @Param("k") int k);
+
+    @Query(value = """
+        WITH ranked_advisor AS (
+          SELECT
+              advisor_id,
+              created_at,
+              ROW_NUMBER() OVER (PARTITION BY advisor_id ORDER BY created_at DESC) AS rn
+          FROM recommendations
+          WHERE is_active = true
+          AND stock_id = :stockId
+        ),
+        latest_advisors AS (
+          SELECT advisor_id
+          FROM ranked_advisor
+          WHERE rn = 1
+          ORDER BY created_at DESC
+          LIMIT :k
+       )
+      SELECT r.*
+      FROM recommendations r
+      WHERE r.advisor_id IN (SELECT advisor_id FROM latest_advisors)
+      AND r.stock_id = :stockId
+      AND r.is_active = true
+      ORDER BY r.created_at DESC;
+    """, nativeQuery = true)
+    List<Recommendation> findLastKAdvisorActiveRecommendationForStockId(@Param("stockId") Long stockId, @Param("k") int k);
 
     List<Recommendation> findByStockIdAndAdvisorIdAndIsActiveTrueAndRatingIn(Long stockId, Long advisorId, List<Recommendation.Rating> ratings);
 

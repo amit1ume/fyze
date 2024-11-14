@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.samartha.fyze.securities.repo.StockRepo;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.Nullable;
@@ -26,10 +27,12 @@ import com.samartha.fyze.securities.model.Stock;
 public class RecommendationService {
     private final RecommendationRepo recommendationRepo;
     private final AdvisorRepo advisorRepo;
+    private final StockRepo stockRepo;
 
-    RecommendationService(RecommendationRepo recommendationRepo, AdvisorRepo advisorRepo) {
+    RecommendationService(RecommendationRepo recommendationRepo, AdvisorRepo advisorRepo, StockRepo stockRepo) {
         this.recommendationRepo = recommendationRepo;
         this.advisorRepo = advisorRepo;
+        this.stockRepo = stockRepo;
     }
 
     public Recommendation saveRecommendation(Recommendation recommendation){
@@ -147,84 +150,92 @@ public class RecommendationService {
         return consolidatedRecommendations;
     }
 
+//    Note: We don't want to user this function. Since we don't want only buy recommendations to be shown for given stock but also the sell recommendations.
+    public List<ConsolidatedBuyRecommendation> getLastKAdvisorActiveRecommendationForGivenStock(Long stockId, int k){
+        Stock stock = stockRepo.findById(stockId).orElseThrow(() -> new RuntimeException("Stock not found"));
+        List<Recommendation> recommendations = recommendationRepo.findLastKAdvisorActiveRecommendationForStockId(stockId, k);
+        Map<Advisor, List<Recommendation>> stockRecommendationsMap = recommendations.stream()
+                .collect(Collectors.groupingBy(Recommendation::getAdvisor));
 
-    public List<ConsolidatedBuyRecommendation> fetchAllAdvisorRecommendations(Stock stock) {
         List<ConsolidatedBuyRecommendation> consolidatedRecommendations = new ArrayList<>();
-        List<Advisor> advisors = advisorRepo.findAll();
-        for (Advisor advisor : advisors) {
-            List<Recommendation> recommendations = recommendationRepo.findLastKActiveStockRecommendationsByAdvisorId(advisor.getId(), 1);
-            if (!recommendations.isEmpty()) {
-                Recommendation latestRecommendation = recommendations.get(0);
-                BigDecimal avgReturn = BigDecimal.ZERO;
-                int enteredRecommendationCount = 0;
-                BigDecimal minEntryPrice = latestRecommendation.getEntryPrice();
-                BigDecimal maxEntryPrice = latestRecommendation.getEntryPrice();
-                Instant earliestEntryDate = latestRecommendation.getEntryDate();
-                BigDecimal latestTargetPrice = latestRecommendation.getTargetPrice();
-                Instant latestTargetDate = latestRecommendation.getCreatedAt();
-                String latestRationale = latestRecommendation.getRationale();
-                Recommendation.TimePeriod latestTimePeriod = latestRecommendation.getTimePeriod();
-                BigDecimal latestStopLoss = latestRecommendation.getStopLoss();
-                Recommendation.Rating latestRating = latestRecommendation.getRating();
+        for (Map.Entry<Advisor, List<Recommendation>> entry : stockRecommendationsMap.entrySet()) {
+            Advisor advisor = entry.getKey();
+            List<Recommendation> recommendationsForStock = entry.getValue();
+            BigDecimal minEntryPrice = null;
+            BigDecimal maxEntryPrice = null;
+            BigDecimal latestTargetPrice = null;
+            Instant earliestEntryDate = null;
+            Instant latestTargetDate = null;
+            String latestRationale = null;
+            BigDecimal latestStopLoss = null;
+            BigDecimal avgReturn = null;
+            TimePeriod latestTimePeriod = null;
+            Recommendation latestRecommendation = null;
+            Rating latestRating = null;
+            int enteredRecommendationCount = 0;
 
-                for (Recommendation rec : recommendations) {
-                    if (rec.getAbsoluteReturn() != null) {
-                        enteredRecommendationCount++;
-                        avgReturn = avgReturn.add(rec.getAbsoluteReturn());
-                    }
+
+            for (Recommendation rec : recommendationsForStock) {
+                if (rec.getEntryDate()!= null && rec.getEntryDate().isAfter(Instant.now())) {
+                    enteredRecommendationCount++;
                     avgReturn = avgReturn.add(rec.getAbsoluteReturn());
-                    if (minEntryPrice.compareTo(rec.getEntryPrice()) > 0) {
-                        minEntryPrice = rec.getEntryPrice();
-                    }
-                    if (maxEntryPrice.compareTo(rec.getEntryPrice()) < 0) {
-                        maxEntryPrice = rec.getEntryPrice();
-                    }
-                    if (earliestEntryDate == null || earliestEntryDate.isAfter(rec.getEntryDate())) {
-                        earliestEntryDate = rec.getEntryDate();
-                    }
-                    if (latestRecommendation == null || latestRecommendation.getCreatedAt().isBefore(rec.getCreatedAt())) {
-                        latestRecommendation = rec;
-                        latestTargetPrice = rec.getTargetPrice();
-                        latestTargetDate = rec.getCreatedAt();
-                        latestRationale = rec.getRationale();
-                        latestTimePeriod = rec.getTimePeriod();
-                        latestStopLoss = rec.getStopLoss();
-                        latestRating = rec.getRating();
-                    }
-
                 }
-                if(enteredRecommendationCount > 0) {
-                    avgReturn = avgReturn.divide(new BigDecimal(enteredRecommendationCount), RoundingMode.HALF_UP);
+                if(rec.getAbsoluteReturn() != null){
+                    avgReturn = avgReturn.add(rec.getAbsoluteReturn());
+                    enteredRecommendationCount++;
                 }
 
-                ConsolidatedBuyRecommendation consolidatedRecommendation = ConsolidatedBuyRecommendation.builder()
-                        .stock(stock)
-                        .advisor(advisor)
-                        .timePeriod(latestTimePeriod)
-                        .rating(latestRating)
-                        .minEntryPrice(minEntryPrice)
-                        .maxEntryPrice(maxEntryPrice)
-                        .latestTargetPrice(latestTargetPrice)
-                        .latestTargetDate(latestTargetDate)
-                        .latestStopLoss(latestStopLoss)
-                        .latestRationale(latestRationale)
-                        .isActive(true)
-                        .avgReturn(avgReturn)
-                        .build();
+                if (minEntryPrice== null || minEntryPrice.compareTo(rec.getEntryPrice()) > 0) {
+                    minEntryPrice = rec.getEntryPrice();
+                }
+                if (maxEntryPrice == null || maxEntryPrice.compareTo(rec.getEntryPrice()) < 0) {
+                    maxEntryPrice = rec.getEntryPrice();
+                }
+                if (earliestEntryDate == null || earliestEntryDate.isAfter(Objects.requireNonNull(rec.getEntryDate()))) {
+                    earliestEntryDate = rec.getEntryDate();
+                }
+                if (latestRecommendation == null || latestRecommendation.getCreatedAt().isBefore(rec.getCreatedAt())) {
+                    latestRecommendation = rec;
+                    latestTargetPrice = rec.getTargetPrice();
+                    latestTargetDate = rec.getCreatedAt();
+                    latestRationale = rec.getRationale();
+                    latestTimePeriod = rec.getTimePeriod();
+                    latestStopLoss = rec.getStopLoss();
+                    latestRating = rec.getRating();
+                }
 
-                consolidatedRecommendations.add(consolidatedRecommendation);
             }
-        }
+            if(enteredRecommendationCount > 0) {
+                avgReturn = avgReturn.divide(new BigDecimal(enteredRecommendationCount), RoundingMode.HALF_UP);
+            }
 
+            ConsolidatedBuyRecommendation consolidatedRecommendation = ConsolidatedBuyRecommendation.builder()
+                    .stock(stock)
+                    .advisor(advisor)
+                    .timePeriod(latestTimePeriod)
+                    .rating(latestRating)
+                    .minEntryPrice(minEntryPrice)
+                    .maxEntryPrice(maxEntryPrice)
+                    .latestTargetPrice(latestTargetPrice)
+                    .latestTargetDate(latestTargetDate)
+                    .latestStopLoss(latestStopLoss)
+                    .latestRationale(latestRationale)
+                    .isActive(true)
+                    .avgReturn(avgReturn)
+                    .build();
+
+            consolidatedRecommendations.add(consolidatedRecommendation);
+        }
         return consolidatedRecommendations;
     }
 
-    public List<Recommendation> getAllRecommendations(@Nullable Long advisorId, @Nullable Boolean onlyActive, Integer page, Integer size){
+    public List<Recommendation> getAllRecommendations(@Nullable Long stockId, @Nullable Long advisorId, @Nullable Boolean onlyActive, Integer page, Integer size){
         Recommendation r = new Recommendation();
         if(Boolean.FALSE.equals(onlyActive)){
             r.setIsActive(null);
         }
         r.setAdvisorId(advisorId);
+        r.setStockId(stockId);
         return recommendationRepo.findAll(Example.of(r), PageRequest.of(page, size)).getContent();
     }
 }
