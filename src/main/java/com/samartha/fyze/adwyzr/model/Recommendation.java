@@ -110,7 +110,7 @@ public class Recommendation extends BaseModel {
     private BigDecimal absoluteReturn;
 
     public enum TimePeriod {
-        VERY_SHORT, SHORT, MEDIUM, LONG, OPEN_ENDED
+        VERY_SHORT, SHORT, MEDIUM, LONG,VERY_LONG, OPEN_ENDED
     }
 
     public enum Rating {
