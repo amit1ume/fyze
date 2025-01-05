@@ -10,6 +10,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorDetails {
-    String code;
-    String desc;
+
+	String code;
+
+	String desc;
+
 }

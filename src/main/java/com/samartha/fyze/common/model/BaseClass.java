@@ -1,4 +1,5 @@
 package com.samartha.fyze.common.model;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.NoArgsConstructor;
@@ -11,15 +12,17 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public abstract class BaseClass {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Override
-    @SneakyThrows
-    public String toString() {
-        try {
-            return objectMapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("BaseClass.toString JsonProcessingException: " + e.getMessage(), e);
-        }
-    }
+	@Override
+	@SneakyThrows
+	public String toString() {
+		try {
+			return objectMapper.writeValueAsString(this);
+		}
+		catch (JsonProcessingException e) {
+			throw new RuntimeException("BaseClass.toString JsonProcessingException: " + e.getMessage(), e);
+		}
+	}
+
 }

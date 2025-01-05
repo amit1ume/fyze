@@ -6,7 +6,11 @@ import lombok.Data;
 @Data
 @Builder
 public class ValidationError {
-    String code;
-    String field;
-    String desc;
+
+	String code;
+
+	String field;
+
+	String desc;
+
 }

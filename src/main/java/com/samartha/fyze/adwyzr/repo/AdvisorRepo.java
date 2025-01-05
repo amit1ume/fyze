@@ -9,6 +9,9 @@ import com.samartha.fyze.adwyzr.model.Advisor;
 
 @Repository
 public interface AdvisorRepo extends JpaRepository<Advisor, Long> {
-    Page<Advisor> findByIsActive(Boolean isActive, Pageable pageable);
-    Page<Advisor> findByIsActiveAndNameContainingIgnoreCase(Boolean isActive, String searchTerm, Pageable pageable);
+
+	Page<Advisor> findByIsActive(Boolean isActive, Pageable pageable);
+
+	Page<Advisor> findByIsActiveAndNameContainingIgnoreCase(Boolean isActive, String searchTerm, Pageable pageable);
+
 }
