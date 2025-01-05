@@ -18,62 +18,48 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/advisors")
 public class AdvisorController {
-    private final AdvisorService advisorService;
 
-    AdvisorController(AdvisorService advisorService) {
-        this.advisorService = advisorService;
-    }
+	private final AdvisorService advisorService;
 
-    @PostMapping(value = {"", "/"})
-    public ResponseEntity<ApiResponse<Advisor>> saveAdvisor(@RequestBody Advisor advisor){
-        Advisor ad = advisorService.saveOrUpdateAdvisor(advisor);
-        return new ResponseEntity<>(
-                ApiResponse
-                        .<Advisor>builder()
-                        .data(ad)
-                        .message("Advisor saved successfully")
-                        .build(),
-                HttpStatus.OK
-                );
-    }
+	AdvisorController(AdvisorService advisorService) {
+		this.advisorService = advisorService;
+	}
 
-    @GetMapping(value = {"", "/"})
-    public ResponseEntity<ApiResponse<Map<String, List<Advisor>>>> getAdvisors(
-            @RequestParam(required = false, defaultValue = "0") Integer page,
-            @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false) String search
-            ) {
-        List<Advisor> advisors = null;
-        if (Strings.isBlank(search)){
-            advisors = advisorService.getAllActiveAdvisors(page, size);
-        } else {
-            advisors = advisorService.findAllActiveAdvisors(search, page, size);
-        }
+	@PostMapping(value = { "", "/" })
+	public ResponseEntity<ApiResponse<Advisor>> saveAdvisor(@RequestBody Advisor advisor) {
+		Advisor ad = advisorService.saveOrUpdateAdvisor(advisor);
+		return new ResponseEntity<>(
+				ApiResponse.<Advisor>builder().data(ad).message("Advisor saved successfully").build(), HttpStatus.OK);
+	}
 
-        Map<String, List<Advisor>> data = Map.of("advisors", advisors);
-        return new ResponseEntity<>(
-                ApiResponse.<Map<String, List<Advisor>>>builder()
-                        .data(data)
-                        .message("Advisors fetched successfully")
-                        .build(),
-                HttpStatus.OK
-        );
-    }
+	@GetMapping(value = { "", "/" })
+	public ResponseEntity<ApiResponse<Map<String, List<Advisor>>>> getAdvisors(
+			@RequestParam(required = false, defaultValue = "0") Integer page,
+			@RequestParam(required = false, defaultValue = "10") Integer size,
+			@RequestParam(required = false) String search) {
+		List<Advisor> advisors = null;
+		if (Strings.isBlank(search)) {
+			advisors = advisorService.getAllActiveAdvisors(page, size);
+		}
+		else {
+			advisors = advisorService.findAllActiveAdvisors(search, page, size);
+		}
 
-    @GetMapping("/{advisorId}")
-    public ResponseEntity<ApiResponse<Advisor>> getAdvisorById(@PathVariable Long advisorId) {
-        Optional<Advisor> advisor = advisorService.findAdvisorById(advisorId);
+		Map<String, List<Advisor>> data = Map.of("advisors", advisors);
+		return new ResponseEntity<>(ApiResponse.<Map<String, List<Advisor>>>builder().data(data)
+				.message("Advisors fetched successfully").build(), HttpStatus.OK);
+	}
 
-        if (advisor.isEmpty()) {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Advisor not found");
-        }
-        return new ResponseEntity<>(
-                ApiResponse.<Advisor>builder()
-                        .data(advisor.get())
-                        .message("Advisor fetched successfully")
-                        .build(),
-                HttpStatus.OK
-        );
-    }
+	@GetMapping("/{advisorId}")
+	public ResponseEntity<ApiResponse<Advisor>> getAdvisorById(@PathVariable Long advisorId) {
+		Optional<Advisor> advisor = advisorService.findAdvisorById(advisorId);
+
+		if (advisor.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Advisor not found");
+		}
+		return new ResponseEntity<>(
+				ApiResponse.<Advisor>builder().data(advisor.get()).message("Advisor fetched successfully").build(),
+				HttpStatus.OK);
+	}
 
 }

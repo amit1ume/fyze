@@ -15,30 +15,32 @@ import jakarta.annotation.Nullable;
 
 @Service
 public class AdvisorService {
-    private final AdvisorRepo advisorRepo;
 
-    AdvisorService(AdvisorRepo advisorRepo) {
-        this.advisorRepo = advisorRepo;
-    }
-    
-    public List<Advisor> getAllActiveAdvisors(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Advisor> advisors =  advisorRepo.findByIsActive(true, pageable);
+	private final AdvisorRepo advisorRepo;
 
-        return advisors.getContent();
-    }
+	AdvisorService(AdvisorRepo advisorRepo) {
+		this.advisorRepo = advisorRepo;
+	}
 
-    public List<Advisor> findAllActiveAdvisors(String searchTerm, int page, int size) {
-        return advisorRepo.findByIsActiveAndNameContainingIgnoreCase(true, searchTerm, PageRequest.of(page, size)).getContent();
-    }
+	public List<Advisor> getAllActiveAdvisors(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<Advisor> advisors = advisorRepo.findByIsActive(true, pageable);
 
-    @Nullable
-    public Optional<Advisor> findAdvisorById(Long advisorId) {
-        return advisorRepo.findById(advisorId);
-    }
+		return advisors.getContent();
+	}
 
-    public Advisor saveOrUpdateAdvisor(Advisor advisor) {
-        return advisorRepo.save(advisor);
-    }
+	public List<Advisor> findAllActiveAdvisors(String searchTerm, int page, int size) {
+		return advisorRepo.findByIsActiveAndNameContainingIgnoreCase(true, searchTerm, PageRequest.of(page, size))
+				.getContent();
+	}
+
+	@Nullable
+	public Optional<Advisor> findAdvisorById(Long advisorId) {
+		return advisorRepo.findById(advisorId);
+	}
+
+	public Advisor saveOrUpdateAdvisor(Advisor advisor) {
+		return advisorRepo.save(advisor);
+	}
 
 }

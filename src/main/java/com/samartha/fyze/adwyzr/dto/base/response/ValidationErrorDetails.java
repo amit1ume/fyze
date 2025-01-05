@@ -15,5 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValidationErrorDetails extends ErrorDetails {
-    List<ValidationError> validationErrors;
+
+	List<ValidationError> validationErrors;
+
 }
