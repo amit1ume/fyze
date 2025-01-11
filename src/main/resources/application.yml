@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: Fyze
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fyze
+    username: fyze
+    password: fyze
+logging:
+  pattern:
+    console: "%clr(%d{dd-MM-yyyy' 'HH:mm:ss.SSSXXX}){faint} %clr(%5p){} %clr(){magenta} %clr(--- [%15.15t] ){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %m | MDC: %X | KVP: %kvp | %n%wEx "
+  level:
+    root: INFO
