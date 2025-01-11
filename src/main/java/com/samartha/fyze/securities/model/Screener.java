@@ -17,7 +17,7 @@ public class Screener {
 
 	public enum ScreenerPlatform {
 
-		TradingView, Screener
+		TRADING_VIEW, SCREENER
 
 	}
 
