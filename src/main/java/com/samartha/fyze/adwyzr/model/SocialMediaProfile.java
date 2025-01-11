@@ -15,14 +15,10 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SocialMediaProfile {
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "platform", nullable = false)
 	private SocialMediaPlatform platform;
 
-	@Column(name = "followers")
 	private Long followers;
 
-	@Column(name = "handle")
 	private String handle;
 
 	public enum SocialMediaPlatform {

@@ -7,6 +7,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 @Data
 @SuperBuilder
@@ -50,6 +55,11 @@ public class Stock extends BaseModel {
 	@Column(name = "sector", nullable = false)
 	private Sector sector;
 
+	@Nullable
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "screeners", columnDefinition = "jsonb")
+	private List<Screener> screeners;
+
 	public enum Exchange {
 
 		NSE, BSE, NYSE, NASDAQ
@@ -64,9 +74,13 @@ public class Stock extends BaseModel {
 
 	public enum Sector {
 
-		IT, HEALTHCARE, FINANCE, FMCG, ENERGY, INDUSTRIALS, UTILITIES, MATERIALS, REAL_ESTATE, COMMUNICATION_SERVICES,
-		BANKING, CAPITAL_GOODS, STEEL, ENTERTAINMENT, AEROSPACE_DEFENCE, RETAIL, RENEWABLE, INFRASTRUCTURE,
-		MISCELLANEOUS, AUTOMOBILE, BREWERIES_DISTILLERIES, PAINTS
+		IT, HEALTHCARE, FINANCE, FMCG, ENERGY, CONSUMER_DURABLES, UTILITIES, MATERIALS, REAL_ESTATE,
+		COMMUNICATION_SERVICES, BANKING, CAPITAL_GOODS, STEEL, ENTERTAINMENT, AEROSPACE_DEFENCE, RETAIL, RENEWABLE,
+		INFRASTRUCTURE, MISCELLANEOUS, AUTOMOBILE, BREWERIES_DISTILLERIES, PAINTS, REFINERIES, CHEMICAL, TELECOM,
+		CEMENT, POWER, OIL_GAS, GEMS_JEWELLERY, TRADING, MARINE_PORTS, MINING, RAILWAY, TRANSPORT, TEXTILE, HOTEL,
+		ECOMMERCE, ELECTRONICS, CABLES, EDIBLE_OIL, FERTILIZER, CASTINGS_FORGINGS, BEARINGS, AGRICULTURE, TYRES,
+		GAS_DISTRIBUTION, LOGISTICS, INFRA_INVESTMENT_TRUST, METAL, REALSTATE_INVESTMENT_TRUST, BATTERY, LEATHER,
+		INSURANCE, BROKER
 
 	}
 }
