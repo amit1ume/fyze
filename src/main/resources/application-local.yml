@@ -3,3 +3,16 @@ spring:
     url: jdbc:postgresql://localhost:5432/fyze
     username: fyze
     password: fyze
+  liquibase:
+    change-log: classpath:/db/changelog/test/data/db.changelog-test.yml
+    drop-first: false # Setting this true will reset the data in local envt every time you boot the application
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  security:
+    enabled: false
+  endpoint:
+    env:
+      show-values: ALWAYS
