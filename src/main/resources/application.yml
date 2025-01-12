@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: Fyze
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yml
+    enabled: true
+
+logging:
+  pattern:
+    console: "%clr(%d{dd-MM-yyyy' 'HH:mm:ss.SSSXXX}){faint} %clr(%5p){} %clr(){magenta} %clr(--- [%15.15t] ){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %m | MDC: %X | KVP: %kvp | %n%wEx "
+  level:
+    root: INFO

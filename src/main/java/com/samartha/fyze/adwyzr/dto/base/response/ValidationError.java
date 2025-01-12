@@ -13,4 +13,6 @@ public class ValidationError {
 
 	String desc;
 
+	Object rejectedValue;
+
 }
