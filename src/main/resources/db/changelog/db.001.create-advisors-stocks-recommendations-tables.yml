@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20250112-create-advisors-table
+      author: Nikhil Gupta
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: stocks
+      changes:
+        - sqlFile:
+            path: ./scripts/advisors.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: 20250112-create-stocks-table
+      author: Nikhil Gupta
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: stocks
+      changes:
+        - sqlFile:
+            path: ./scripts/stocks.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: 20250112-create-recommendations-table
+      author: Nikhil Gupta
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            tableExists:
+              tableName: recommendations
+      changes:
+        - sqlFile:
+            path: ./scripts/recommendations.sql
+            relativeToChangelogFile: true

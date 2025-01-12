@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/db.changelog-master.yml
+  - changeSet:
+      id: import-stocks-data
+      author: Nikhil Gupta
+      changes:
+        - sqlFile:
+            path: ./001-stocks-data.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: import-advisors-data
+      author: Nikhil Gupta
+      changes:
+        - sqlFile:
+            path: ./002-advisors-data.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: import-recommendations-data
+      author: Nikhil Gupta
+      changes:
+        - sqlFile:
+            path: ./003-recommendations-data.sql
+            relativeToChangelogFile: true
