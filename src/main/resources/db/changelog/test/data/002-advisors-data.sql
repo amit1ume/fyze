@@ -35,3 +35,5 @@ INSERT INTO advisors (id,"name",advisor_type,is_nism_certified,is_sebi_registere
 	 (34,'Yash Gupta','INFLUENCER',false,false,'{}','{}','[{"handle": "https://www.instagram.com/kamao_yar/", "platform": "INSTAGRAM", "followers": 39000}, {"handle": "https://www.youtube.com/@kamao_yar", "platform": "YOUTUBE", "followers": 390}, {"handle": "https://t.me/kamao_yar", "platform": "TELEGRAM", "followers": 2500}]',true,'2024-11-16 23:47:37.901864+05:30','2024-11-16 23:47:37.901864+05:30'),
 	 (35,'Gautam Rawat','INFLUENCER',false,false,'{}','{}','[{"handle": "https://www.instagram.com/gautamrawat/", "platform": "INSTAGRAM", "followers": 12000}, {"handle": "https://www.youtube.com/@gautamrawat1", "platform": "YOUTUBE", "followers": 3300}]',true,'2024-11-16 23:54:22.475996+05:30','2024-11-16 23:54:22.475996+05:30'),
 	 (36,'Kalyan Kumar','INFLUENCER',true,false,'{}','{}','[{"handle": "https://www.instagram.com/indianstockmarketguide/", "platform": "INSTAGRAM", "followers": 203000}]',true,'2024-11-17 00:01:48.428365+05:30','2024-11-17 00:01:48.428365+05:30');
+
+SELECT setval('advisors_id_seq', COALESCE((SELECT MAX(id) FROM advisors), 0),true);
