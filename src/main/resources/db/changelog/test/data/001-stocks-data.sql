@@ -487,3 +487,5 @@ INSERT INTO stocks (id,exchange,symbol,short_name,full_name,isin,market_cap,sect
 	 (498,'NSE','INDIGRID','India Grid','India Grid Trust','INE219X23014','MID','INFRA_INVESTMENT_TRUST','[{"link": "https://www.screener.in/company/INDIGRID/consolidated/", "platform": "SCREENER"}]','2025-01-12 01:26:55.380754+05:30','2025-01-12 01:26:55.380754+05:30'),
 	 (499,'NSE','ZYDUSWELL','Zydus Wellness','Zydus Wellness Ltd','INE768C01010','MID','HEALTHCARE','[{"link": "https://www.screener.in/company/ZYDUSWELL/consolidated/", "platform": "SCREENER"}]','2025-01-12 01:27:45.836293+05:30','2025-01-12 01:27:45.836293+05:30'),
 	 (500,'NSE','ZEEL','Zee Entertainment','Zee Entertainment Enterprises Ltd','INE256A01028','MID','ENTERTAINMENT','[{"link": "https://www.screener.in/company/ZEEL/consolidated/", "platform": "SCREENER"}]','2025-01-12 01:28:44.305105+05:30','2025-01-12 01:28:44.305105+05:30');
+
+SELECT setval('stocks_id_seq', COALESCE((SELECT MAX(id) FROM stocks), 0),true);

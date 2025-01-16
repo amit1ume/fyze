@@ -6,6 +6,12 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/test/data/db.changelog-test.yml
     drop-first: false # Setting this true will reset the data in local envt every time you boot the application
+  web:
+    cors:
+      allowed-origin-patterns: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
 management:
   endpoints:
     web:
